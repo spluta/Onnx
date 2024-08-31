@@ -3,4 +3,3 @@ build/
 Onnx/OnnxUGen.scx
 .DS_Store
 Onnx/Python/venv/
-onnxruntime/
