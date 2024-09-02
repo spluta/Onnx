@@ -66,7 +66,10 @@
 			"map": "cpp",
 			"set": "cpp",
 			"unordered_set": "cpp",
-			"filesystem": "cpp"
+			"filesystem": "cpp",
+			"forward_list": "cpp",
+			"valarray": "cpp",
+			"*.ipp": "cpp"
 		}
 	}
 }

@@ -1,25 +1,7 @@
-
-//#pragma once
-
 #include "SC_PlugIn.hpp"
 #include "libsamplerate/include/samplerate.h"
-#include "onnxruntime_cxx_api.h"
+#include "OnnxObject.hpp"
 
-// namespace Onnx {
-
-class OnnxObject {
- public:
-  OnnxObject();
-  ~OnnxObject();
-
-  std::vector<std::string> input_names;
-  std::vector<std::string> output_names;
-
-  std::unique_ptr<Ort::Session> session = NULL;
-
-  //this should be float*
-  float forward (std::vector<float> input, int num_inputs);
-};
 
 class OnnxUGen : public SCUnit {
 public:
@@ -29,11 +11,15 @@ public:
   ~OnnxUGen();
 
   bool m_model_loaded{false};
-  // std::__1::unique_ptr<Onnx::Model<float>> m_model;
   int m_model_input_size;
   int m_model_output_size;
   int m_numInputChannels;
   int m_numOutputChannels;
+
+  std::vector<float> inVecSmall;
+  std::vector<float> outVecSmall;
+  float* interleaved_array;
+  float* outbuf;
 
   std::unique_ptr<SRC_STATE, decltype (&src_delete)> src_state { nullptr, &src_delete };
   std::unique_ptr<SRC_STATE, decltype (&src_delete)> src_state_out { nullptr, &src_delete };

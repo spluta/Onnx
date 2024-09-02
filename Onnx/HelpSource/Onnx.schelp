@@ -1,0 +1,124 @@
+TITLE:: Onnx
+summary:: Onnxruntime inference engine
+categories:: UGens>NeuralProcessing
+
+
+DESCRIPTION::
+This is a SuperCollider UGen which uses Microsoft's onnxruntime inference engine to load and run tensorflow neural network models. 
+
+CLASSMETHODS::
+
+METHOD:: ar
+Onnx models can operate at audio rate or control rate. At audio rate the input array should be audio rate. At control rate, the input array should be control rate.
+
+ARGUMENT:: input_array
+an array of audio inputs - size of the array needs to match the size of the input layer of the provided neural network model
+
+ARGUMENT:: num_outputs
+the number of audio outputs for the UGen. this number must match the number of outputs of the provided neural network model
+
+ARGUMENT:: id
+each RTNeural UGen in a Synth needs a unique id
+
+ARGUMENT:: bypass
+bypass the effect - audio goes straight out with no CPU use by the neural network
+
+ARGUMENT:: sample_rate
+the default setting is -1, which means this is bypassed. however, some audio effects are trained on audio at a sample rate. if the provided model is trained a specific sample rate, provide that sample rate here. then the incoming signals will be resampled to the correct sample rate before going through the neural network and sampled back after inference.
+
+METHOD:: kr
+Onnx models can operate at audio rate or control rate. At audio rate the input array should be audio rate. At control rate, the input array should be control rate.
+
+ARGUMENT:: input_array
+an array of control inputs - size of the array needs to match the size of the input layer of the provided neural network model
+
+ARGUMENT:: num_outputs
+the number of control outputs for the UGen. this number must match the number of outputs of the provided neural network model
+
+ARGUMENT:: id
+each Onnx UGen in a Synth needs a unique id
+
+ARGUMENT:: bypass
+bypass the effect - input goes straight out with no CPU use by the neural network
+
+ARGUMENT:: sample_rate
+the default setting is -1. i'm not sure why you would change this for a control rate model
+
+
+METHOD:: loadModel
+loads pretrained Onnx models and weights into the onnxruntime from a .onnx file. the onnx file must be saved in the correct format. files can be saved from pytorch in the correct format using torch.onnx.dynamo_export
+
+ARGUMENT:: synth
+the synth where the UGen exists
+
+ARGUMENT:: id
+the id for the UGen where you are loading the model
+
+ARGUMENT:: path
+path to the onnx file
+
+
+EXAMPLES::
+
+code::
+//this gru model isn't actually trained on anything. I am just showing a GRU model works
+
+SynthDef('onnx_gru', {
+    var onnx, in = SinOsc.ar(MouseY.kr(100, 2000));
+    //gru takes one input
+    in = [in];
+    onnx = Onnx.ar(in, 1, 'this_one', \bypass.kr(0));
+    Out.ar(0,
+        onnx.dup*0.2
+    );
+}).load(s);
+
+~synth = Synth('onnx_gru');
+
+//load the model
+~path = PathName(Onnx.filenameSymbol.asString).pathOnly++"python/";
+//the standard training seems to have an issue at low gain
+Onnx.loadModel(~synth, \this_one, ~path++"gru_torch.onnx");
+
+Stethoscope(s, 2);
+
+//a multilayer perceptron neural network that has been trained on variable wavetable oscillator
+//i am not saying this is a good use of a neural network
+
+(
+    SynthDef('onnx_osc', {
+        //the network takes two inputs: 1 - phase of the oscillator and 2 - which oscillator type (0=sine, 0.33=tri, 0.66=square, 1=saw)
+        var in = LFSaw.ar(MouseX.kr(50,500)).range(0,1);
+        var mouse = K2A.ar(MouseY.kr);
+
+        var synth = Onnx.ar([in,mouse], 1, 'this_one', \bypass.kr(0))*0.5;
+        Out.ar(0, synth.dup);
+    }).load(s);
+)
+
+//make the synth
+~synth = Synth('onnx_osc');
+~path = PathName(Onnx.filenameSymbol.asString).pathOnly++"python/";
+Onnx.loadModel(~synth, \this_one, ~path++"4Osc.onnx");
+
+
+//FluCoMa-style MLP Regressor
+
+SynthDef('onnx_mlp', {
+    var onnx, in;
+    //gru takes one input
+    in = [MouseX.kr, MouseY.kr];
+    onnx = Onnx.kr(in, 10, 'this_one', \bypass.kr(0));
+    onnx.poll;
+    nil
+}).load(s);
+
+~synth = Synth('onnx_mlp');
+
+//load the model
+~path = PathName(Onnx.filenameSymbol.asString).pathOnly++"python/";
+//the standard training seems to have an issue at low gain
+Onnx.loadModel(~synth, \this_one, ~path++"mlp.onnx");
+
+
+::

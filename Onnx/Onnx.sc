@@ -27,11 +27,13 @@ Onnx : MultiOutUGen {
 			synthIndex = SynthDescLib.global[defName].metadata()[defName][id.asSymbol]['index'];
 		};
 
+		synthIndex.postln;
 		if (synthIndex == nil){
 			"SynthDef has no metadata.\n".error;
 		};
 
 		synthIndex.do{|index|
+			[synth.nodeID, index].postln;
 			synth.server.sendMsg('/u_cmd', synth.nodeID, index, 'load_model', path);
 		}
 	}
