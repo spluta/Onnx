@@ -1,3 +1,6 @@
 [submodule "libsamplerate"]
 	path = libsamplerate
 	url = https://github.com/libsndfile/libsamplerate.git
+[submodule "abseil-cpp"]
+	path = abseil-cpp
+	url = https://github.com/abseil/abseil-cpp.git

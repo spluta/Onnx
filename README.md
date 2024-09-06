@@ -2,25 +2,34 @@
 
 A SuperCollider UGen which implements the Onnx inference engine. This engine is designed for real-time safe inference of tensorflow and pytorch trained neural networks.
 
+The UGen can do both audio rate and control rate inference over any single-tensor-in and single-tensor-out model with any number of inputs or outputs.
+
 Installation:
 
-Because this currently uses a dynamic library for onnx, it needs to be built from source
+The easiest thing would be to downoad a release from the [releases](https://github.com/spluta/Onnx/releases) page.
 
+After placing the release in the SuperCollider Extensions folder, mac users will need to dequarantine the folder. Run the following in the terminal:
 
-Building:
+xattr -cr <THE_DOWNLOADED_ONNX_FOLDER>
 
-1. Download this repository to its own directory. Place the directory in the SC Extensions folder: "/Users/<YOUR_USER_NAME>/Library/Application Support/SuperCollider/Extensions 
+Building from source:
 
-    (the current mac dynamic and static libraries of onnx are included (for now))
+1. Clone this repository
 
-2. Download the libsamplerate submodules:
+2. Download the current static build of onnxruntime and place it in the main Onnx directory. As of this writing, it can be found here:
+
+https://github.com/csukuangfj/onnxruntime-libs/releases
+
+The folder will have a long name having to do with the os and cpu. Rename the folder "onnxruntime_static". 
+
+3. Download the libsamplerate and abseil-cpp submodules:
 ```
 git submodule update --init --recursive
 ```
 
+4. Build libsamplerate in release mode (setting BUILD_TESTING to FALSE disables testing that makes it look like it didn't build correctly when it did).
 
-3. Build libsamplerate in release mode (from the libsamplerate submodule directory):
-(setting BUILD_TESTING to FALSE disables testing that makes it look like it didn't build correctly when it did)
+from inside the libsamplerate submodule directory:
 ```
 mkdir build
 cd build
@@ -39,7 +48,7 @@ cmake --build . --config Release
 
 It should build Onnx plugin and leave the Onnx.scx file in the build directory
 
-After building make sure not to move the Onnx directory as it will need to link to the dynamic library
+
 
 
 

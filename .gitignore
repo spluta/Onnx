@@ -1,7 +1,6 @@
 build/
 .vscode/
-Onnx/OnnxUGen.scx
+Onnx/Onnx.scx
 .DS_Store
-Onnx/Python/venv/
-onnxruntime_dylib/
+Onnx/python/venv/
 onnxruntime_static/
