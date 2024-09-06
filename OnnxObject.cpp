@@ -26,6 +26,12 @@ Ort::Value vec_to_tensor(std::vector<T>& data, const std::vector<std::int64_t>& 
 
 void OnnxObject::load_model(const char* model_path) {
   try {
+    if (session != NULL){
+      session.release();
+    }
+  
+    session = NULL;
+
     std::cout<<"try"<<std::endl;
 
     Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "onnx_runtime");
@@ -39,6 +45,11 @@ void OnnxObject::load_model(const char* model_path) {
 
     //don't know why this is necessary
     Ort::AllocatorWithDefaultOptions allocator;
+
+    input_names.clear();
+    output_names.clear();
+    input_names_char.clear();
+    output_names_char.clear();
 
     input_names.emplace_back(session->GetInputNameAllocated(0, allocator).get());
     std::cout << "input: " << input_names.at(0) << " : " <<  std::endl;

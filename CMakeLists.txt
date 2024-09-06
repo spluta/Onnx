@@ -43,7 +43,6 @@ target_link_libraries(${APP_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libsamplera
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/onnxruntime_static/include)
 
 target_link_libraries(${APP_NAME} PUBLIC absl::synchronization)
-
 target_link_libraries(${APP_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/onnxruntime_static/lib/libonnxruntime.a)
 
 # cmake -DCMAKE_BUILD_TYPE=Release -DSC_PATH='/Users/spluta1/Documents/SC/SuperColliderBuild/SuperCollider' ..

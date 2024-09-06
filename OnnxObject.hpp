@@ -7,8 +7,6 @@ class OnnxObject {
 
   std::vector<std::string> input_names;
   std::vector<std::string> output_names;
-  // std::vector<Ort::Value> input_tensors;
-  // std::vector<Ort::Value> output_tensors;
 
   std::vector<const char*> input_names_char;
   std::vector<const char*> output_names_char;
