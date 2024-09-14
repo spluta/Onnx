@@ -18,6 +18,9 @@ public:
 
   std::vector<float> inVecSmall;
   std::vector<float> outVecSmall;
+
+  std::vector<std::vector<float>> outVecs;
+
   float* interleaved_array;
   float* outbuf;
 
@@ -33,13 +36,17 @@ private:
   // Calc function
   void next(int nSamples);
 
+  // Load model
   void load_model(OnnxUGen* unit, sc_msg_iter* args);
+
+  void load_stateful_rnn (OnnxUGen* unit, sc_msg_iter* args, int stateful);
 
   size_t resample (const float* input, float* output, size_t numSamples) noexcept;
   size_t resample_out (const float* input, float* output, size_t inSamples, size_t outSamples) noexcept;
 
   float m_step_val{1.f/(float)sampleRate()};
   float m_process_sample_rate{-1.f};
+  bool m_stateful{false};
 
   float *in_rs;
   float *out_temp;

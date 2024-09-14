@@ -15,7 +15,7 @@ Onnx : MultiOutUGen {
 		^this.initOutputs(argNumOutChannels, rate);
 	}
 
-	*loadModel {|synth, id, path|
+	*loadModel {|synth, id, path, stateful=0|
 		//get the index from SynthDescLib
 		var defName = synth.defName.asSymbol;
 		var synthIndex = SynthDescLib.global[defName];
@@ -34,7 +34,7 @@ Onnx : MultiOutUGen {
 
 		synthIndex.do{|index|
 			[synth.nodeID, index].postln;
-			synth.server.sendMsg('/u_cmd', synth.nodeID, index, 'load_model', path);
+			synth.server.sendMsg('/u_cmd', synth.nodeID, index, 'load_model', path, stateful);
 		}
 	}
 

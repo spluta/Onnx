@@ -89,15 +89,21 @@ OnnxUGen::~OnnxUGen() {
   RTFree(mWorld, out_temp);
 }
 
+// void load_stateful_rnn (OnnxUGen* unit, sc_msg_iter* args) {
+//   OnnxUGen::load_model(unit, args, 1);
+// }
+
 void load_model (OnnxUGen* unit, sc_msg_iter* args) {
   const char *path = args->gets();
+  int stateful = args->geti();
 
-  std::cout<<"Loading model from path: "<<path<<std::endl;
+  std::cout<<"loading model: "<<path<<" stateful: "<<stateful<<std::endl;
+  
   unit->m_model_loaded = false;
   try {
     
 
-    unit->m_model.load_model(path);
+    unit->m_model.load_model(path, stateful);
 
     unit->m_model_input_size = unit->m_model.session->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape()[1];
     unit->m_model_output_size = unit->m_model.session->GetOutputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape()[1];
@@ -114,6 +120,7 @@ void load_model (OnnxUGen* unit, sc_msg_iter* args) {
 
     unit->inVecSmall.resize(unit->m_numInputChannels);
     unit->outVecSmall.resize(unit->m_numOutputChannels);
+    unit->outVecs.resize(0);
 
     if (unit->m_model_input_size!=unit->m_numInputChannels) {
       std::cout << "error: model input size does not match the number of input channels\n";
@@ -157,10 +164,12 @@ void OnnxUGen::next(int nSamples)
     }
   } else if (sr<=0||sr==sampleRate()) {
     //if the sample rate is not altered, we can just pass the data directly to the model
+    //m_model.new_input_tensor();
     for (int i = 0; i < nSamples; ++i){
       for (int j = 0; j < m_numInputChannels; ++j) {
         inVecSmall[j] = inArray[j][i];
       }
+      //m_model.add_input_tensor(inVecSmall, m_numInputChannels);
       m_model.forward(inVecSmall, outVecSmall, m_numInputChannels, m_numOutputChannels);
       for (int j = 0; j < m_numOutputChannels; ++j) {
         out(j)[i] = outVecSmall[j];
@@ -209,5 +218,6 @@ PluginLoad(Onnx)
   ft = inTable;
   registerUnit<OnnxUGen>(ft, "Onnx", false);
   DefineUnitCmd("Onnx", "load_model", (UnitCmdFunc)&load_model);
+  // DefineUnitCmd("Onnx", "load_stateful_model", (UnitCmdFunc)&load_model);
 
 }
